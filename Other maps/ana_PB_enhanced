@@ -1,0 +1,2049 @@
+settings
+{
+	main
+	{
+		Description: "<fg00cc66ff>The original Enhanced Ana Paintball mode\r\nby Jinko!</fg>\r\n1DMTZ V2.2.1\r\n\r\n<fgFF88F0ff>• 7 maps with jump pads\r\n   & teleporters to move around!\r\n• The final kill can only be secured\r\n    with a Sleep Dart!\r\n• Killstreaks, shutdo﻿wns etc\r\n   are tracked and announced!\r\nAnd much more!</fg>\r\nAll details on <fg00cc66ff>workshop.codes/1DMTZ</fg>\r\n\r\nBattleTag: Jinko#2838 - Discord: Jinko#2154"
+		Mode Name: "<fgFF88F0ff>Ana Paintball</fg>"
+	}
+
+	lobby
+	{
+		Allow Players Who Are In Queue: Yes
+		Map Rotation: After A Game
+		Max FFA Players: 9
+		Max Spectators: 12
+		Return To Lobby: Never
+		Swap Teams After Match: No
+	}
+
+	modes
+	{
+		Deathmatch
+		{
+			enabled maps
+			{
+				Black Forest Winter 0
+				Château Guillard Halloween 0
+				Ecopoint: Antarctica 0
+				Eichenwalde 0
+				Kanezaka 0
+				Malevento 0
+				Petra 0
+			}
+		}
+
+		General
+		{
+			Allow Hero Switching: Off
+			Enemy Health Bars: Off
+			Game Mode Start: Immediately
+			Kill Cam: Off
+			Respawn Time Scalar: 0%
+			Score To Win: 25
+			Self Initiated Respawn: Off
+			Spawn Health Packs: Disabled
+		}
+	}
+
+	heroes
+	{
+		General
+		{
+			Infinite Ultimate Duration: On
+			Ultimate Generation: 10%
+			Ultimate Generation - Combat: 0%
+			Ultimate Generation - Passive: 0%
+
+			Ana
+			{
+				Biotic Grenade: Off
+				Sleep Dart Cooldown Time: 20%
+				Ultimate Generation - Combat Nano Boost: 0%
+				Ultimate Generation - Passive Nano Boost: 0%
+			}
+
+			enabled heroes
+			{
+				Ana
+			}
+		}
+	}
+
+	extensions
+	{
+		Buff Status Effects
+		Buff and Debuff Sounds
+		Energy Explosion Effects
+		Explosion Sounds
+	}
+}
+
+variables
+{
+	global:
+		0: MapList
+		1: __currentMap__
+
+	player:
+		0: A
+		1: KillStreak
+		2: SleepLock
+		3: D
+		4: RespawnDelay
+		5: Nanoscore
+		6: OofText
+		11: L
+}
+
+rule("OverPy Map Detection")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		If(Array Contains(Array(Map(Ayutthaya), Map(Black Forest), Map(Black Forest), Map(Blizzard World), Map(Blizzard World), Map(Busan),
+			Map(Busan), Map(Busan), Map(Castillo), Map(Château Guillard), Map(Château Guillard), Map(Circuit royal), Map(Colosseo), Map(
+			Dorado), Map(Ecopoint: Antarctica), Map(Eichenwalde), Map(Eichenwalde), Map(Esperança), Map(Hanamura), Map(Hanamura), Map(
+			Havana), Map(Hollywood), Map(Horizon Lunar Colony), Map(Ilios), Map(Ilios), Map(Ilios), Map(Ilios), Map(Junkenstein's Revenge),
+			Map(Junkertown), Map(Kanezaka), Map(King's Row), Map(King's Row), Map(Lijiang Control Center), Map(Lijiang Control Center),
+			Map(Lijiang Garden), Map(Lijiang Garden), Map(Lijiang Night Market), Map(Lijiang Night Market), Map(Lijiang Tower), Map(
+			Lijiang Tower), Map(Malevento), Map(Midtown), Map(Necropolis), Map(Nepal), Map(Nepal), Map(Nepal), Map(Nepal), Map(
+			New Queen Street), Map(Numbani), Map(Oasis), Map(Oasis), Map(Oasis), Map(Oasis), Map(Paraíso), Map(Paris), Map(Petra), Map(
+			Practice Range), Map(Rialto), Map(Route 66), Map(Temple of Anubis), Map(Volskaya Industries), Map(Watchpoint: Gibraltar), Map(
+			Workshop Chamber), Map(Workshop Expanse), Map(Workshop Expanse), Map(Workshop Green Screen), Map(Workshop Island), Map(
+			Workshop Island)), Current Map));
+			Global.__currentMap__ = Current Map;
+			Abort;
+		End;
+		Global.__currentMap__ = Ray Cast Hit Position(Vector(500, 100, 500), Vector(-500, -100, -500), Null, Null, False);
+		If(Global.__currentMap__ == Vector(0, 0, 0) || Global.__currentMap__ == Vector(-500, -100, -500));
+			Global.__currentMap__ = Ray Cast Hit Position(Vector(30, 5, 0), Vector(-30, -10, -10), Null, Null, False);
+			If(Global.__currentMap__ == Vector(-30, -10, -10));
+				Global.__currentMap__ = Ray Cast Hit Position(Vector(200, 20, 100), Vector(100, -100, -100), Null, Null, False);
+				If(Global.__currentMap__ == Vector(100, -100, -100));
+					Global.__currentMap__ = Ray Cast Hit Position(Vector(300, 20, -100), Vector(300, -100, 100), Null, Null, False);
+					If(Global.__currentMap__ == Vector(300, -100, 100));
+						Global.__currentMap__ = Ray Cast Hit Position(Vector(50, 100, -150), Vector(-50, -100, -160), Null, Null, False);
+						If(Global.__currentMap__ == Vector(-50, -100, -160));
+							Global.__currentMap__ = Ray Cast Hit Position(Vector(0, 300, 340), Vector(0, -100, -300), Null, Null, False);
+							If(Global.__currentMap__ == Vector(0, -100, -300));
+								Global.__currentMap__ = Ray Cast Hit Position(Vector(140, 10, -240), Vector(200, -10, -300), Null, Null, False);
+								If(Global.__currentMap__ == Vector(200, -10, -300));
+									Global.__currentMap__ = Ray Cast Hit Position(Vector(-180, 30, 60), Vector(-180, -50, -60), Null, Null, False);
+								End;
+							End;
+						End;
+					End;
+				End;
+			End;
+		End;
+		Global.__currentMap__ = 100 * Round To Integer(Y Component Of(Global.__currentMap__), Up) + 10 * Round To Integer(X Component Of(
+			Global.__currentMap__), To Nearest) + Round To Integer(Z Component Of(Global.__currentMap__), Down);
+		If(Global.__currentMap__ == 10121);
+			Global.__currentMap__ = Ray Cast Hit Position(Vector(-60, 20, -60), Vector(60, -10, 60), Null, Null, False);
+			If(Global.__currentMap__ == Vector(60, -10, 60));
+				Global.__currentMap__ = Ray Cast Hit Position(Vector(-180, -70, 60), Vector(-180, -100, -60), Null, Null, False);
+			End;
+			Global.__currentMap__ = 100 * Round To Integer(Y Component Of(Global.__currentMap__), Up) + 10 * Round To Integer(X Component Of(
+				Global.__currentMap__), To Nearest) + Round To Integer(Z Component Of(Global.__currentMap__), Down);
+		End;
+	}
+}
+
+rule("Disable game completion, display HUD")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Disable Built-In Game Mode Completion;
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("{0} your last kill can only be a {1} sleep !", Icon String(
+			Warning), Ability Icon String(Hero(Ana), Button(Ability 1))), Top, 1, Null, Null, Color(Yellow), Visible To,
+			Default Visibility);
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("1DMTZ V2.2.1"), Right, 1, Null, Null, Color(White), Visible To,
+			Default Visibility);
+	}
+}
+
+rule("Start match sooner")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Is Assembling Heroes == True;
+	}
+
+	actions
+	{
+		Wait(1, Ignore Condition);
+		Set Match Time(20);
+		Wait(20.100, Ignore Condition);
+		Set Match Time(261);
+		Wait(0.016, Ignore Condition);
+		Pause Match Time;
+	}
+}
+
+rule("Everything deals 0.0001 damage")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Set Damage Dealt(Event Player, 0.000);
+	}
+}
+
+rule("Declare Nanoscore")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Event Player.Nanoscore = 24;
+	}
+}
+
+rule("While score < nanoscore, allow all buttons")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Score Of(Event Player) < Event Player.Nanoscore;
+		Is Alive(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(0.200, Ignore Condition);
+		Allow Button(Event Player, Button(Primary Fire));
+		Allow Button(Event Player, Button(Secondary Fire));
+		Allow Button(Event Player, Button(Melee));
+		Allow Button(Event Player, Button(Reload));
+		Stop Holding Button(Event Player, Button(Ultimate));
+	}
+}
+
+rule("Random message to each players when they first spawn")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+		Number Of Deaths(Event Player) == 0;
+	}
+
+	actions
+	{
+		Wait(0.100, Ignore Condition);
+		Small Message(Event Player, Custom String("    Mode by Jinko"));
+		Wait(0.100, Ignore Condition);
+		Small Message(Event Player, Random Value In Array(Array(Custom String("    {0} Jump pads make your movements predictable!",
+			Ability Icon String(Hero(Winston), Button(Ability 1))), Custom String("    {0} There are 7 maps available!",
+			Ability Icon String(Hero(Kiriko), Button(Jump))), Custom String("    {0} Some maps have teleporters!", Ability Icon String(
+			Hero(Symmetra), Button(Ability 2))), Custom String("    {0} Don't sleep-lock other players...", Icon String(Eye)),
+			Custom String("    {0} Shutdowns are announced to everyone!", Ability Icon String(Hero(Tracer), Button(Ability 2))),
+			Custom String("    {0} Killstreaks are announced to everyone!", Icon String(Flag)), Custom String(
+			"    {0} There are many jump pads around!", Ability Icon String(Hero(Baptiste), Button(Crouch))), Custom String(
+			"    {0} 4 kills without dying = on fire!", Icon String(Fire)), Custom String("    {0} 10 kills without dying = Rampage!",
+			Ability Icon String(Hero(Junker Queen), Button(Ultimate))), Custom String(
+			"    {0} Nanoboosted players can only use Sleep Dart!", Ability Icon String(Hero(Ana), Button(Ultimate))), Custom String(
+			"    {0}  Melee only kills sleeping players!", Ability Icon String(Hero(Ana), Button(Melee))), Custom String(
+			"    {0}  Thanks for playing!", Icon String(Heart)), Custom String("    Good luck, have fun!"))));
+	}
+}
+
+rule("Hardscope messages")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Firing Secondary(Event Player) == True;
+		Is Firing Primary(Event Player) == False;
+	}
+
+	actions
+	{
+		Wait(4, Abort When False);
+		Small Message(Event Player, Random Value In Array(Array(Custom String("    Nice hardscope"), Custom String(
+			"    We got a hardscope champion"), Custom String("    1 year of hardscoping later..."), Custom String(
+			"    that's a LONG hardscope"))));
+		Loop;
+	}
+}
+
+rule("If player melees an awake player, display explanation")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Melee);
+		Has Status(Victim, Asleep) == False;
+	}
+
+	actions
+	{
+		Small Message(Event Player, Custom String("    {0}  Melee only kills sleeping players!  {0}", Icon String(No)));
+	}
+}
+
+rule("RAMPAGE EFFECT")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Create Effect(Array(Event Player.KillStreak >= 10), Echo Cloning Effect, Color(Team 1), Event Player, 1,
+			Visible To Position and Radius);
+		Create Effect(Array(Event Player.KillStreak >= 10), Mercy Damage Boosted Effect, Color(Team 1), Event Player, 1,
+			Visible To Position and Radius);
+	}
+}
+
+rule("Reset player's variables & effects upon death")
+{
+	event
+	{
+		Player Died;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Wait(1, Ignore Condition);
+		Event Player.RespawnDelay = 0;
+		Event Player.KillStreak = 0;
+		Event Player.SleepLock = 0;
+		Clear Status(Event Player, Burning);
+		Set Move Speed(Event Player, 100);
+		Wait(2.100, Ignore Condition);
+		Event Player.RespawnDelay = 1;
+	}
+}
+
+rule("RIFLE hit = kill, killer: KillStreak +1")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Primary Fire);
+	}
+
+	actions
+	{
+		Kill(Victim, Attacker);
+		Attacker.KillStreak += 1;
+	}
+}
+
+rule("MELEE kills sleeping players")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Has Status(Victim, Asleep) == True;
+		Event Ability == Button(Melee);
+	}
+
+	actions
+	{
+		Kill(Victim, Attacker);
+		Play Effect(All Players(All Teams), Sigma Accretion Impact Sound, Color(White), Position Of(Event Player), 100);
+		Attacker.KillStreak += 1;
+		Wait(0.200, Ignore Condition);
+		Small Message(Attacker, Random Value In Array(Array(Custom String("    {0}{1}  Sleep-punched {2}!", Ability Icon String(Hero(Ana),
+			Button(Melee)), Ability Icon String(Hero(Ana), Button(Ability 1)), Victim), Custom String("    {0}{1}  Relaxed {2}!",
+			Ability Icon String(Hero(Ana), Button(Melee)), Ability Icon String(Hero(Ana), Button(Ability 1)), Victim), Custom String(
+			"    {0}{1}  slammed {2}!", Ability Icon String(Hero(Ana), Button(Melee)), Ability Icon String(Hero(Ana), Button(Ability 1)),
+			Victim), Custom String("    {0}{1}  Gave {2} nightmares!", Ability Icon String(Hero(Ana), Button(Melee)), Ability Icon String(
+			Hero(Ana), Button(Ability 1)), Victim))));
+	}
+}
+
+rule("When 4 kills streak: start burning, announce it")
+{
+	event
+	{
+		Player Earned Elimination;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.KillStreak == 4;
+		Is Alive(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Status(Event Player, Null, Burning, 9999);
+		Play Effect(All Players(All Teams), Brigitte Repair Pack Armor Sound, Color(White), Position Of(Event Player), 100);
+		Small Message(Remove From Array(All Players(All Teams), Event Player), Custom String("    {0}  {1} is on fire!  {2}", Icon String(
+			Skull), Event Player, Icon String(Skull)));
+		Wait(1, Abort When False);
+		Small Message(Event Player, Random Value In Array(Array(Custom String("    {0}  You are stomping!", Icon String(Fire)),
+			Custom String("    {0}  Woooow!", Icon String(Fire)), Custom String("    {0}  Damn, you're owning!", Icon String(Fire)),
+			Custom String("    {0}  Is this easy mode?", Hero Icon String(Hero(Ana))), Custom String(
+			"    {0}  Looking for worthy opponents...", Hero Icon String(Hero(Bastion))), Custom String("    {0}  Error: no challenger",
+			Icon String(Warning)))));
+	}
+}
+
+rule("Announce 4 to 8 killstreak shutdo﻿wn")
+{
+	event
+	{
+		Player Died;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Was Environment == False;
+		Event Player.KillStreak >= 4;
+		Event Player.KillStreak < 9;
+		Event Player.SleepLock < 1;
+	}
+
+	actions
+	{
+		Small Message(Attacker, Custom String("    {0}  Ended {1}'s {2} Killstreak!", Ability Icon String(Hero(Tracer), Button(Ability 2)),
+			Event Player, Event Player.KillStreak));
+		Small Message(Remove From Array(All Players(All Teams), Array(Event Player, Attacker)), Custom String(
+			"    {0}  {1} has shut {2} down!", Ability Icon String(Hero(Tracer), Button(Ability 2)), Attacker, Event Player));
+	}
+}
+
+rule("When RAMPAGE announce it")
+{
+	event
+	{
+		Player Earned Elimination;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.KillStreak == 10;
+	}
+
+	actions
+	{
+		Small Message(Remove From Array(All Players(All Teams), Event Player), Custom String("    {0}  {1} is on a rampage!",
+			Ability Icon String(Hero(Junker Queen), Button(Ultimate)), Event Player));
+		Play Effect(All Players(All Teams), Doomfist Rising Uppercut Leap Sound, Color(White), Position Of(Event Player), 999);
+		Wait(1, Abort When False);
+		Small Message(Event Player, Random Value In Array(Array(Custom String("    {0}  You are on a rampage!", Ability Icon String(Hero(
+			Junker Queen), Button(Ultimate))), Custom String("    {0}  10 in a row!", Ability Icon String(Hero(Junker Queen), Button(
+			Ultimate))), Custom String("    {0}  10 kills without dying!", Ability Icon String(Hero(Junker Queen), Button(Ultimate))),
+			Custom String("    {0}  Rampage!", Ability Icon String(Hero(Junker Queen), Button(Ultimate))), Custom String(
+			"    You are unbeatable!"))));
+	}
+}
+
+rule("Announce when RAMPAGE ends")
+{
+	event
+	{
+		Player Died;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Was Environment == False;
+		Event Player.KillStreak >= 9;
+		Event Player.SleepLock < 1;
+	}
+
+	actions
+	{
+		Small Message(Attacker, Custom String("    {0}  Ended {1}'s {2} kills rampage!", Ability Icon String(Hero(Doomfist), Button(
+			Ability 1)), Event Player, Event Player.KillStreak));
+		Small Message(Remove From Array(All Players(All Teams), Array(Event Player, Attacker)), Custom String(
+			"    {0}  {1}'s {2} kills rampage ended!", Ability Icon String(Hero(Tracer), Button(Ability 2)), Event Player,
+			Event Player.KillStreak));
+	}
+}
+
+rule("Environement death")
+{
+	event
+	{
+		Player Died;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Was Environment == True;
+	}
+
+	actions
+	{
+		Wait(1, Ignore Condition);
+		Small Message(Event Player, Random Value In Array(Array(Custom String("    {0}  Unlucky.", Icon String(Sad)), Custom String(
+			"    {0}  Watch your step!", Icon String(Warning)), Custom String("    {0}  Everybody saw that...", Icon String(Sad)),
+			Custom String("    {0}  Don't tell anyone.", Icon String(Sad)), Custom String("    {0}  Happens to the best of us.",
+			Icon String(Checkmark)), Custom String("    {0}  Lakitu got you!", Icon String(Happy)), Custom String("    {0}  Awkward.",
+			Icon String(Sad)), Custom String("    Was it cool down there?"), Custom String("    {0}  Poor legs...", Icon String(Sad)))));
+		Event Player.KillStreak = 0;
+		Event Player.SleepLock = 0;
+	}
+}
+
+rule("Long distance kills OOF")
+{
+	event
+	{
+		Player Took Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Alive(Attacker) == True;
+		Distance Between(Attacker, Victim) >= 40;
+		Event Was Environment == False;
+	}
+
+	actions
+	{
+		Small Message(Attacker, Random Value In Array(Array(Custom String("    {0} Long shot!", Ability Icon String(Hero(Cassidy), Button(
+			Ultimate))), Custom String("    {0}  Nice shot.", Hero Icon String(Hero(Widowmaker))), Custom String("    {0}  Nice shot!",
+			Hero Icon String(Hero(Cassidy))))));
+		Create In-World Text(All Players(All Teams), Custom String("Oof"), Event Player, 1, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Event Player.OofText = Last Text ID;
+		Wait(0.500, Ignore Condition);
+		Destroy In-World Text(Event Player.OofText);
+	}
+}
+
+rule("Sleeping an already sleeping player adds 1 to your SleepLock")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Has Status(Victim, Asleep) == True;
+	}
+
+	actions
+	{
+		Event Player.SleepLock += 1;
+	}
+}
+
+rule("If SleepLock = 2, execute attacker, wake victim, reset attacker SleepLock and KillStreak")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Has Status(Victim, Asleep) == True;
+		Event Player.SleepLock == 2;
+	}
+
+	actions
+	{
+		Kill(Event Player, Event Player);
+		Set Player Score(Event Player, Score Of(Event Player) - 1);
+		Small Message(Victim, Custom String("    Executed {0} for sleep-locking you", Event Player));
+		Wait(1, Ignore Condition);
+		Small Message(Event Player, Custom String("    Executed for sleep-locking {0}", Victim));
+		Damage(Victim, Attacker, 1);
+	}
+}
+
+rule("Sleep-lock resets after 5s without sleeping anyone")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Event Player.SleepLock > 0;
+	}
+
+	actions
+	{
+		Wait(5, Abort When False);
+		Event Player.SleepLock = 0;
+	}
+}
+
+rule("NANOBOOST EFFECT")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Create Effect(Array(Score Of(Event Player) == Event Player.Nanoscore && Is Alive(Event Player) && Event Player.RespawnDelay == 1),
+			Ana Nano Boosted Effect, Color(Team 1), Event Player, Is Using Ultimate(Event Player) ? 0 : 1, Visible To Position and Radius);
+		Create Effect(Array(Score Of(Event Player) == Event Player.Nanoscore && Is Alive(Event Player) && Event Player.RespawnDelay == 1),
+			Ana Nano Boosted Sound, Color(Team 1), Event Player, Is Using Ultimate(Event Player) ? 0 : 100,
+			Visible To Position and Radius);
+	}
+}
+
+rule("If score = 24, disable all except sleep dart, warn other players, display objective")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Score Of(Event Player) == Event Player.Nanoscore;
+	}
+
+	actions
+	{
+		Disallow Button(Event Player, Button(Primary Fire));
+		Disallow Button(Event Player, Button(Secondary Fire));
+		Disallow Button(Event Player, Button(Melee));
+		Disallow Button(Event Player, Button(Reload));
+		Small Message(Remove From Array(All Players(All Teams), Event Player), Custom String("    {0}  {1} is 1 kill away from winning!",
+			Icon String(Skull), Event Player));
+		Big Message(Event Player, Custom String("    {0} Sleep someone to win! {0}", Icon String(Warning)));
+	}
+}
+
+rule("When score = 24, nanoboost self continously")
+{
+	event
+	{
+		Player Earned Elimination;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Score Of(Event Player) == Event Player.Nanoscore;
+	}
+
+	actions
+	{
+		Wait(0.200, Ignore Condition);
+		Set Ultimate Charge(Event Player, 100);
+		Press Button(Event Player, Button(Ultimate));
+	}
+}
+
+rule("When score = 24 and died, nanoboost self again")
+{
+	event
+	{
+		Player Died;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Score Of(Event Player) == Event Player.Nanoscore;
+		Is Using Ultimate(Event Player) == False;
+	}
+
+	actions
+	{
+		Wait(2.200, Abort When False);
+		Set Ultimate Charge(Event Player, 100);
+		Press Button(Event Player, Button(Ultimate));
+	}
+}
+
+rule("DECLARE MAP LIST")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.MapList = Array(Map(Eichenwalde), 565, Map(Petra), Map(Ecopoint: Antarctica), Map(Château Guillard), 3439, Map(Malevento),
+			Map(Kanezaka), 2148);
+	}
+}
+
+rule("Warning HUD if current map is not in MAP LIST")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Array Contains(Global.MapList, Global.__currentMap__) == False;
+	}
+
+	actions
+	{
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("{0} This map isn't enhanced by this mode yet", Icon String(
+			Warning)), Left, 0, Null, Null, Color(Orange), Visible To, Default Visibility);
+	}
+}
+
+rule("Game ending if current map is not in MAP LIST")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Score Of(Event Player) == Event Player.Nanoscore;
+		(!Array Contains(Global.MapList, Global.__currentMap__) || Global.__currentMap__ == Map(Kanezaka) || Global.__currentMap__ == 2148)
+			== True;
+	}
+
+	actions
+	{
+		Start Camera(All Players(All Teams), Ray Cast Hit Position(Victim, Victim + Vector(5, 5, 5), All Players(All Teams), Null, True),
+			Victim, 5);
+		Set Aim Speed(Event Player, 10);
+		Set Player Score(Event Player, 25);
+		Enable Built-In Game Mode Completion;
+		Declare Player Victory(Event Player);
+		Wait(1.500, Ignore Condition);
+		Play Effect(All Players(All Teams), DVa Self Destruct Explosion Effect, Color(Team 1), Victim, 1);
+		Play Effect(All Players(All Teams), DVa Self Destruct Explosion Sound, Color(Team 1), Victim, 200);
+	}
+}
+
+rule("DAY create all effects")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.__currentMap__ == Map(Eichenwalde);
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(47.050, 2.910, -75.460), 3.900,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(60.910, 8.900, -58.980), 3.100,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(67.980, 11.050, -104.860), 1.800,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(97.150, 11.160, -77.680), 1.800,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Good Aura, Color(Yellow), Vector(93, 19.920, -66.891), 0.500,
+			Visible To Position and Radius);
+	}
+}
+
+rule("HALLOWEEN create all effects")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.__currentMap__ == 565;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Sphere, Color(Blue), Vector(47.050, 2.910, -75.460), 3.900, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Blue), Vector(60.910, 8.900, -58.980), 3.100, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Blue), Vector(67.980, 11.050, -104.860), 1.800,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Blue), Vector(97.150, 11.160, -77.680), 1.800, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Good Aura, Color(Yellow), Vector(93, 19.920, -66.891), 0.500,
+			Visible To Position and Radius);
+	}
+}
+
+rule("JUMP PAD main")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(47.050, 2.910, -75.460)) <= 3.900;
+		(Global.__currentMap__ == Map(Eichenwalde) || Global.__currentMap__ == 565) == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+		Apply Impulse(Event Player, Up, 23.500, To World, Cancel Contrary Motion);
+	}
+}
+
+rule("JUMP PAD staircase")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(60.910, 8.900, -58.980)) <= 3.100;
+		(Global.__currentMap__ == Map(Eichenwalde) || Global.__currentMap__ == 565) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD overpa﻿ss")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(67.980, 11.050, -104.860)) <= 1.800;
+		(Global.__currentMap__ == Map(Eichenwalde) || Global.__currentMap__ == 565) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 17, To Player, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD castle")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(97.150, 11.160, -77.680)) <= 1.800;
+		(Global.__currentMap__ == Map(Eichenwalde) || Global.__currentMap__ == 565) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 12, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("LAUNCHER gates")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(93, 19.920, -66.891)) <= 1.500;
+		(Global.__currentMap__ == Map(Eichenwalde) || Global.__currentMap__ == 565) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Velocity Of(Event Player) * -1, Square Root(Dot Product(Velocity Of(Event Player), Velocity Of(
+			Event Player))), To World, Incorporate Contrary Motion);
+		Apply Impulse(Event Player, Vector(-0.920, -0.153, -0.361), 100, To World, Cancel Contrary Motion);
+		Apply Impulse(Event Player, Up, 20, To World, Cancel Contrary Motion);
+		Set Status(Event Player, Null, Rooted, 1.600);
+		Play Effect(All Players(All Teams), Debuff Impact Sound, Color(White), Event Player, 40);
+		Event Player.D = 1.500;
+		Chase Player Variable At Rate(Event Player, D, 0, 1, Destination and Rate);
+	}
+}
+
+rule("LOCKED ZONE")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(36.010, 15.790, -79.280)) <= 4.400;
+		(Global.__currentMap__ == Map(Eichenwalde) || Global.__currentMap__ == 565) == True;
+	}
+
+	actions
+	{
+		Play Effect(Event Player, Debuff Impact Sound, Color(White), Event Player, 30);
+		Apply Impulse(Event Player, Vector Towards(Event Player, Vector(58.779, 19.298, -77.287)), 10, To World, Cancel Contrary Motion);
+		Apply Impulse(Event Player, Up, 1, To World, Cancel Contrary Motion);
+		Small Message(Event Player, Custom String("    {0} Locked zone {0}", Icon String(No)));
+		Set Status(Event Player, Null, Knocked Down, 0.016);
+		Wait(0.500, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("end cam")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Score Of(Event Player) == Event Player.Nanoscore;
+		(Global.__currentMap__ == Map(Eichenwalde) || Global.__currentMap__ == 565) == True;
+	}
+
+	actions
+	{
+		Set Player Score(Event Player, 25);
+		Set Aim Speed(All Players(All Teams), 10);
+		Set Move Speed(All Players(All Teams), 10);
+		Resurrect(All Dead Players(All Teams));
+		Apply Impulse(All Players(All Teams), Velocity Of(Event Player) * -1, 0.001, To World, Cancel Contrary Motion XYZ);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(All Players(All Teams), Down, 100000, To World, Cancel Contrary Motion);
+		Disallow Button(All Players(All Teams), Button(Primary Fire));
+		Disallow Button(All Players(All Teams), Button(Secondary Fire));
+		Disallow Button(All Players(All Teams), Button(Melee));
+		Disallow Button(All Players(All Teams), Button(Ability 1));
+		Set Status(All Players(All Teams), Null, Rooted, 9999);
+		Set Status(Victim, Null, Asleep, 9999);
+		Teleport(Event Player, Vector(12.780, 9.710, -40.620));
+		Teleport(Victim, Vector(11.470, 9.710, -40.290));
+		Set Slow Motion(50);
+		Wait(0.100, Ignore Condition);
+		Set Facing(Event Player, Direction Towards(Event Player, Vector(9.530, 9.850, -39.860)), To World);
+		Set Facing(Victim, Direction Towards(Event Player, Victim), To World);
+		Wait(0.016, Ignore Condition);
+		Start Camera(All Players(All Teams), Vector(9.530, 9.850, -39.860), Event Player, 0);
+		Wait(0.016, Ignore Condition);
+		Start Camera(All Players(All Teams), Vector(10.540, 11.510, -40.110), Victim, 0.500);
+		Enable Built-In Game Mode Completion;
+		Declare Player Victory(Event Player);
+	}
+}
+
+rule("create all effects")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.__currentMap__ == Map(Petra);
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(2.051, -4.500, -19.133), 1.300,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(1.910, -16.700, 46.100), 3.900,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-4.100, -11.480, 17.620), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(14.180, -1.600, 14.600), 1, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-15.330, -10.700, 30.070), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-38.520, -15.720, 18.040), 3.500,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-18.840, -8, 52.380), 2, Visible To Position and Radius);
+	}
+}
+
+rule("JUMP PAD hole in ground")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(2.051, -4.500, -19.133)) <= 1.300;
+		Global.__currentMap__ == Map(Petra);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Vector Towards(Event Player, Vector(1.998, 8, -13.868)), 13, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD big boy")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(1.910, -16.700, 46.100)) <= 3.900;
+		Global.__currentMap__ == Map(Petra);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 22.200, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD mid")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-4.100, -11.480, 17.620)) <= 2;
+		Global.__currentMap__ == Map(Petra);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 19, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD flying mid")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(14.180, -1.600, 14.600)) <= 2;
+		Global.__currentMap__ == Map(Petra);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 16.500, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD staircase")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-15.330, -10.700, 30.070)) <= 2;
+		Global.__currentMap__ == Map(Petra);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 19, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD s﻿anctuary")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-38.520, -15.720, 18.040)) <= 3.500;
+		Global.__currentMap__ == Map(Petra);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 18.500, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD rocks")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-18.840, -8, 52.380)) <= 2;
+		Global.__currentMap__ == Map(Petra);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 13, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("end cam")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Score Of(Event Player) == Event Player.Nanoscore;
+		Global.__currentMap__ == Map(Petra);
+	}
+
+	actions
+	{
+		Set Player Score(Event Player, 25);
+		Set Status(All Players(All Teams), Null, Invincible, 9999);
+		Set Status(Event Player, Null, Rooted, 1.500);
+		Start Camera(All Players(All Teams), Vector(33.320, -9.636, 43.515), Vector(33.320, -10, 43.515), 0);
+		Start Holding Button(Event Player, Button(Ability 1));
+		Apply Impulse(Event Player, Velocity Of(Event Player) * -1, Square Root(Dot Product(Velocity Of(Event Player), Velocity Of(
+			Event Player))), To World, Incorporate Contrary Motion);
+		Resurrect(All Dead Players(All Teams));
+		Teleport(All Players(All Teams), Vector(-35.036, -10.928, 11.688));
+		Set Status(Victim, Null, Stunned, 9999);
+		Disallow Button(All Players(All Teams), Button(Primary Fire));
+		Teleport(Victim, Vector(29.572, -9.674, 35.794));
+		Teleport(Event Player, Vector(29.073, -9.681, 35.178));
+		Start Forcing Player To Be Hero(Event Player, Hero(Reinhardt));
+		Set Facing(Victim, Vector Towards(Victim, Vector(33.714, -9.555, 41.499)), To World);
+		Set Aim Speed(Event Player, 10);
+		Set Move Speed(Event Player, 50);
+		Wait(0.016, Ignore Condition);
+		Start Camera(All Players(All Teams), Vector(33.320, -9.636, 43.515), Event Player, 5);
+		Set Facing(Event Player, Vector Towards(Event Player, Vector(33.714, -9.556, 41.499)), To World);
+		Set Slow Motion(25);
+		Enable Built-In Game Mode Completion;
+		Declare Player Victory(Event Player);
+	}
+}
+
+rule("create all effects")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.__currentMap__ == Map(Ecopoint: Antarctica);
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-6.100, 4.700, 17), 2.600, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-6.100, 4.700, -17), 2.600, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(10.350, 2.180, 0), 2.300, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-15, 4.850, 0), 2.900, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Bad Aura, Color(Blue), Vector(-5.350, 8, -54.660), 1.500, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sparkles, Color(Lime Green), Vector(-5.350, 8, -54.660), 1.500,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Beacon Sound, Color(Blue), Vector(-5.350, 8, -54.660), 100, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Bad Aura, Color(Blue), Vector(-13.800, 8, 43.570), 1.500, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sparkles, Color(Lime Green), Vector(-13.800, 8, 43.570), 1.500,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Beacon Sound, Color(Blue), Vector(-13.800, 8, 43.570), 100, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Bad Aura, Color(Blue), Vector(-25, 31.500, -11.360), 0.500, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Bad Aura, Color(Blue), Vector(-25, 31.500, 16.500), 0.500, Visible To Position and Radius);
+	}
+}
+
+rule("JUMP PADS sides")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Distance Between(Event Player, Vector(-6.100, 4.700, 17)) <= 2.600 || Distance Between(Event Player, Vector(-6.100, 4.700, -17))
+			<= 2.600) == True;
+		Global.__currentMap__ == Map(Ecopoint: Antarctica);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 16, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 25);
+	}
+}
+
+rule("JUMP PAD mid")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(10.350, 2.180, 0)) <= 2.300;
+		Global.__currentMap__ == Map(Ecopoint: Antarctica);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15.500, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD garage")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-15, 4.850, 0)) <= 2.900;
+		Global.__currentMap__ == Map(Ecopoint: Antarctica);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 25);
+	}
+}
+
+rule("TELEPORTER 1")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-7.780, 8, -57.050)) <= 4.800;
+		Global.__currentMap__ == Map(Ecopoint: Antarctica);
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Explosion Sound, Color(White), Event Player, 150);
+		Wait(0.016, Ignore Condition);
+		Event Player.L = 1.500;
+		Chase Player Variable At Rate(Event Player, L, 0, 1, Destination and Rate);
+		Event Player.A = Y Component Of(Facing Direction Of(Event Player));
+		Teleport(Event Player, Vector(-25, 31.500, -11.360));
+		Set Facing(Event Player, Normalize(Vector(5, Y Component Of(Position Of(Event Player)), -23) - Position Of(Event Player)) + Vector(
+			0, Event Player.A, 0), To World);
+		Start Accelerating(Event Player, Up, 20, 20, To World, Direction Rate and Max Speed);
+		Apply Impulse(Event Player, Vector(0, 0, 0), 2, To World, Cancel Contrary Motion);
+		Apply Impulse(Event Player, Down, 3, To World, Cancel Contrary Motion);
+		Wait(0.500, Ignore Condition);
+		Stop Accelerating(Event Player);
+	}
+}
+
+rule("TELEPORTER 2")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-16.300, 8, 41)) <= 4.900;
+		Global.__currentMap__ == Map(Ecopoint: Antarctica);
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Explosion Sound, Color(White), Event Player, 150);
+		Wait(0.016, Ignore Condition);
+		Event Player.L = 1.500;
+		Chase Player Variable At Rate(Event Player, L, 0, 1, Destination and Rate);
+		Event Player.A = Y Component Of(Facing Direction Of(Event Player));
+		Teleport(Event Player, Vector(-25, 31.500, 16.500));
+		Set Facing(Event Player, Normalize(Vector(0, Y Component Of(Position Of(Event Player)), 28) - Position Of(Event Player)) + Vector(
+			0, Event Player.A, 0), To World);
+		Start Accelerating(Event Player, Up, 20, 20, To World, Direction Rate and Max Speed);
+		Apply Impulse(Event Player, Vector(0, 0, 0), 2, To World, Cancel Contrary Motion);
+		Apply Impulse(Event Player, Down, 3, To World, Cancel Contrary Motion);
+		Wait(0.500, Ignore Condition);
+		Stop Accelerating(Event Player);
+	}
+}
+
+rule("end cam")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Score Of(Event Player) == Event Player.Nanoscore;
+		Global.__currentMap__ == Map(Ecopoint: Antarctica);
+	}
+
+	actions
+	{
+		Kill(All Players(All Teams), Null);
+		Wait(0.016, Ignore Condition);
+		Resurrect(All Dead Players(All Teams));
+		Disallow Button(All Players(All Teams), Button(Primary Fire));
+		Disallow Button(All Players(All Teams), Button(Secondary Fire));
+		Disallow Button(All Players(All Teams), Button(Melee));
+		Disallow Button(All Players(All Teams), Button(Ability 1));
+		Set Player Score(Event Player, 25);
+		Set Aim Speed(All Players(All Teams), 10);
+		Set Move Speed(All Players(All Teams), 10);
+		Wait(0.016, Ignore Condition);
+		Teleport(Event Player, Vector(-8.430, 7, -49.600));
+		Teleport(Remove From Array(All Players(All Teams), Event Player), Vector(-13.250, 7, -52.770));
+		Wait(0.100, Ignore Condition);
+		Set Facing(Event Player, Direction Towards(Event Player, Vector(-13.250, 8, -52.770)), To World);
+		Set Facing(Victim, Direction Towards(Victim, Event Player), To World);
+		Wait(0.016, Ignore Condition);
+		Set Status(Remove From Array(All Players(All Teams), Event Player), Event Player, Frozen, 9999);
+		Set Status(Event Player, Null, Rooted, 9999);
+		Start Camera(All Players(All Teams), Vector(-9.580, 8.750, -47.750), Vector(-9, 8.750, -51), 0);
+		Wait(0.016, Ignore Condition);
+		Start Camera(All Players(All Teams), Vector(-9.580, 8.750, -47.750), Vector(-10.980, 8.400, -49.130), 0.500);
+		Enable Built-In Game Mode Completion;
+	}
+}
+
+rule("DAY create all effects")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.__currentMap__ == Map(Château Guillard);
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(229.490, 0.380, 83.100), 2.300,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(187.320, -0.600, 69.500), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(218.550, 10.440, 47.060), 2, Visible To Position and Radius);
+	}
+}
+
+rule("HALLOWEEN create all effects")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.__currentMap__ == 3439;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Sphere, Color(Blue), Vector(229.490, 0.380, 83.100), 2.300, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Blue), Vector(187.320, -0.600, 69.500), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Blue), Vector(218.550, 10.440, 47.060), 2, Visible To Position and Radius);
+	}
+}
+
+rule("jump pads")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Distance Between(Event Player, Vector(229.490, 0.380, 83.100)) <= 2.300 || Distance Between(Event Player, Vector(187.320, -0.600,
+			69.500)) <= 2 || Distance Between(Event Player, Vector(218.550, 10.440, 47.060)) <= 2) == True;
+		(Global.__currentMap__ == Map(Château Guillard) || Global.__currentMap__ == 3439) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 17.500, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 25);
+	}
+}
+
+rule("end cam")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Score Of(Event Player) == Event Player.Nanoscore;
+		(Global.__currentMap__ == Map(Château Guillard) || Global.__currentMap__ == 3439) == True;
+	}
+
+	actions
+	{
+		Set Player Score(Event Player, 25);
+		Set Status(All Players(All Teams), Null, Invincible, 9999);
+		Apply Impulse(Event Player, Velocity Of(Event Player) * -1, Square Root(Dot Product(Velocity Of(Event Player), Velocity Of(
+			Event Player))), To World, Incorporate Contrary Motion);
+		Start Camera(All Players(All Teams), Vector(196.587, 17.748, 55.701), Vector(196.636, 17.748, 46.619), 0);
+		Disallow Button(All Players(All Teams), Button(Jump));
+		Disallow Button(All Players(All Teams), Button(Primary Fire));
+		Resurrect(All Dead Players(All Teams));
+		Teleport(All Players(All Teams), Vector(189.096, 9.252, 97.505));
+		Wait(0.020, Ignore Condition);
+		Teleport(Event Player, Vector(196.636, 17.748, 46.619));
+		Teleport(Victim, Vector(196.642, 17.748, 47.680));
+		Set Aim Speed(Event Player, 10);
+		Set Move Speed(Event Player, 10);
+		Set Facing(Victim, Up, To World);
+		Set Facing(Event Player, Vector Towards(Eye Position(Event Player), Vector(196.555, 17.748, 51.982)), To World);
+		Set Status(Victim, Null, Knocked Down, 9999);
+		Start Camera(All Players(All Teams), Vector(196.496, 17.748, 47.437), Vector(196.485, 17.748, 46.288), 0.700);
+		Wait(0.500, Ignore Condition);
+		Declare Player Victory(Event Player);
+	}
+}
+
+rule("endcam tbag")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Score Of(Event Player) > Event Player.Nanoscore;
+		(Global.__currentMap__ == Map(Château Guillard) || Global.__currentMap__ == 3439) == True;
+	}
+
+	actions
+	{
+		Allow Button(Event Player, Button(Crouch));
+		Start Holding Button(Event Player, Button(Crouch));
+		Wait(0.300, Ignore Condition);
+		Disallow Button(Event Player, Button(Crouch));
+		Wait(0.300, Ignore Condition);
+		Loop;
+	}
+}
+
+rule("Create all effects")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.__currentMap__ == Map(Malevento);
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-29.650, -4.570, -8), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(0, -2.620, -7.230), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(11.720, 0, 9.650), 3.700, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(0, -1.780, 34.060), 4, Visible To Position and Radius);
+	}
+}
+
+rule("JUMP PAD bridge")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-29.650, -4.570, -8)) <= 2;
+		Global.__currentMap__ == Map(Malevento);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 17, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD woman statue")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(0, -2.620, -7.230)) <= 2;
+		Global.__currentMap__ == Map(Malevento);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 20.900, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD big boy")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(11.720, 0, 9.650)) <= 3.700;
+		Global.__currentMap__ == Map(Malevento);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD over green pad")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(0, -1.780, 34.060)) <= 4.100;
+		Global.__currentMap__ == Map(Malevento);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 26, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("end cam")
+{
+	event
+	{
+		Player Dealt Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Score Of(Event Player) == Event Player.Nanoscore;
+		Global.__currentMap__ == Map(Malevento);
+	}
+
+	actions
+	{
+		Set Player Score(Event Player, 25);
+		Set Aim Speed(All Players(All Teams), 10);
+		Set Move Speed(All Players(All Teams), 10);
+		Resurrect(All Dead Players(All Teams));
+		Apply Impulse(All Players(All Teams), Velocity Of(Event Player) * -1, 0.001, To World, Cancel Contrary Motion XYZ);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(All Players(All Teams), Down, 100000, To World, Cancel Contrary Motion);
+		Disallow Button(All Players(All Teams), Button(Primary Fire));
+		Disallow Button(All Players(All Teams), Button(Secondary Fire));
+		Disallow Button(All Players(All Teams), Button(Melee));
+		Disallow Button(All Players(All Teams), Button(Ability 1));
+		Set Status(Remove From Array(All Players(All Teams), Array(Event Player, Victim)), Null, Asleep, 9999);
+		Set Status(Event Player, Null, Rooted, 9999);
+		Teleport(Event Player, Vector(0, 10.250, 26.750));
+		Set Facing(Event Player, Direction Towards(Event Player, Vector(0, 9, 27.200)), To World);
+		Teleport(Remove From Array(All Players(All Teams), Event Player), Vector(0, 6.500, 29));
+		Enable Built-In Game Mode Completion;
+		Wait(0.100, Ignore Condition);
+		Start Camera(All Players(All Teams), Vector(0, 12, 29), Eye Position(Event Player), 0);
+		Wait(0.700, Ignore Condition);
+		Start Camera(All Players(All Teams), Vector(0, 12, 32), Vector(0, 8.500, 27.200), 75);
+	}
+}
+
+rule("Create all effects")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.__currentMap__ == Map(Kanezaka);
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-26.700, 4, 26.500), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-20.900, 5.200, -35.300), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-15.500, 4.160, -13.300), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-17, 4, 6), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-33, 4, 13.720), 1.960, Visible To Position and Radius);
+	}
+}
+
+rule("JUMP PAD overpa﻿ss")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-26.700, 4, 27)) <= 2;
+		Global.__currentMap__ == Map(Kanezaka);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD castle entrance")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-20.900, 5.200, -35.300)) <= 2;
+		Global.__currentMap__ == Map(Kanezaka);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 12, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD mid corridor")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-15.500, 4.160, -13.300)) <= 2;
+		Global.__currentMap__ == Map(Kanezaka);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 14, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD Vending machines")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-17, 4, 6)) <= 2;
+		Global.__currentMap__ == Map(Kanezaka);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 14, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD platforms")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-33, 4, 13.720)) <= 1.960;
+		Global.__currentMap__ == Map(Kanezaka);
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 12, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("Create all effects")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.__currentMap__ == 2148;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Bad Aura, Color(Rose), Vector(-32, 13, 8), 1.300, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sparkles, Color(Purple), Vector(-32, 13, 8), 1.300, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Beacon Sound, Color(Blue), Vector(-32, 13, 8), 100, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(4.600, 10, 5), 2.800, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(0, 10.820, 24.240), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(0, 10.840, -14.870), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-20.550, 11.400, -11), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(-20.550, 11.400, 22), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(21.400, 9.500, -8.700), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Color(Purple), Vector(21.400, 9.600, 19.160), 2, Visible To Position and Radius);
+	}
+}
+
+rule("JUMP PAD mill")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(4.600, 10, 5)) <= 2.800;
+		Global.__currentMap__ == 2148;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PAD Mansions (2)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Distance Between(Event Player, Vector(0, 10.820, 24.240)) <= 2 || Distance Between(Event Player, Vector(0, 10.840, -14.870)) <= 2)
+			== True;
+		Global.__currentMap__ == 2148;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PADS mid (2)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Distance Between(Event Player, Vector(-20.550, 11.400, -11)) <= 2 || Distance Between(Event Player, Vector(-20.550, 11.400, 22))
+			<= 2) == True;
+		Global.__currentMap__ == 2148;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("JUMP PADS overpa﻿sses (2)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Distance Between(Event Player, Vector(21.400, 9.500, -8.700)) <= 2 || Distance Between(Event Player, Vector(21.400, 9.600,
+			19.160)) <= 2) == True;
+		Global.__currentMap__ == 2148;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To World, Cancel Contrary Motion);
+		Play Effect(All Players(All Teams), Ring Explosion Sound, Color(White), Event Player, 30);
+	}
+}
+
+rule("TELEPORTER")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Distance Between(Event Player, Vector(-32, 13, 8)) <= 2;
+		Global.__currentMap__ == 2148;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Explosion Sound, Color(White), Event Player, 100);
+		Play Effect(Remove From Array(All Players(All Teams), Event Player), Explosion Sound, Color(White), Vector(-32, 13, 8), 30);
+		Wait(0.016, Ignore Condition);
+		Event Player.L = 1.500;
+		Chase Player Variable At Rate(Event Player, L, 0, 1, Destination and Rate);
+		Event Player.A = Y Component Of(Facing Direction Of(Event Player));
+		Teleport(Event Player, Vector(29, 11, 5));
+		Set Facing(Event Player, Normalize(Vector(0, Y Component Of(Position Of(Event Player)), 0) - Position Of(Event Player)) + Vector(0,
+			Event Player.A, 0), To World);
+		Wait(0.750, Ignore Condition);
+		Stop Accelerating(Event Player);
+	}
+}
